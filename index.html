@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina IPTV | مشغل القنوات الحصري</title>
+    <!-- استيراد خطوط جوجل وأيقونات FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0d0f12;
+            --card-bg: #161920;
+            --primary-color: #ff3366;
+            --secondary-color: #00f2fe;
+            --text-color: #ffffff;
+            --text-muted: #a0aec0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* خلفية جمالية متدرجة مضيئة */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vh;
+            background: radial-gradient(circle, rgba(255, 51, 102, 0.15) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vh;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* الهيدر والعنوان الرئيسي */
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        /* قسم أزرار التحميل */
+        .download-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .btn-download {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            border: 2px solid #2d3748;
+            padding: 12px 28px;
+            border-radius: 14px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-download i {
+            font-size: 1.6rem;
+        }
+
+        .btn-download.android:hover {
+            border-color: #a4c639;
+            box-shadow: 0 0 15px rgba(164, 198, 57, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .btn-download.apple:hover {
+            border-color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* قسم البيانات الحصري */
+        .exclusive-panel {
+            background: linear-gradient(135deg, rgba(22, 25, 32, 0.9), rgba(22, 25, 32, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        /* شارة "حصري" */
+        .badge-exclusive {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: linear-gradient(45deg, #ff3366, #ff6b6b);
+            padding: 4px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(255, 51, 102, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .exclusive-panel h2 {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: #fff;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exclusive-panel h2 i {
+            color: var(--primary-color);
+        }
+
+        .data-field {
+            background: #1a1f29;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border 0.3s ease;
+        }
+
+        .data-field:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+        }
+
+        .field-info {
+            text-align: right;
+        }
+
+        .field-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .field-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: monospace, 'Cairo';
+            letter-spacing: 0.5px;
+        }
+
+        .btn-copy {
+            background: #2d3748;
+            border: none;
+            color: var(--secondary-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            background: var(--secondary-color);
+            color: #000;
+        }
+
+        /* مواقع التواصل الاجتماعي */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--card-bg);
+            border: 1px solid #2d3748;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon.telegram:hover { background: #0088cc; border-color: #0088cc; box-shadow: 0 0 15px rgba(0,136,204,0.4); }
+        .social-icon.whatsapp:hover { background: #25d366; border-color: #25d366; box-shadow: 0 0 15px rgba(37,211,102,0.4); }
+        .social-icon.instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-color: transparent; }
+
+        /* ======================================= */
+        /* ستايل الكارت المنبثق المحسن              */
+        /* ======================================= */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 12, 16, 0.92);
+            backdrop-filter: blur(10px);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .welcome-modal {
+            background: linear-gradient(135deg, #1a1f29 0%, #11141a 100%);
+            border: 2px solid rgba(0, 242, 254, 0.3);
+            border-radius: 20px;
+            padding: 25px 20px;
+            max-width: 360px;
+            width: 88%;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 242, 254, 0.25);
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .welcome-modal::before {
+            content: '';
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 110px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.35) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .close-popup-btn {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            z-index: 5;
+        }
+        .close-popup-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .trophy-icon {
+            font-size: 3.8rem;
+            background: linear-gradient(45deg, #ffd700, #ffa500, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+            animation: bouncePulse 2.5s infinite ease-in-out;
+        }
+
+        .welcome-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.5;
+        }
+
+        .btn-enter {
+            background: linear-gradient(45deg, var(--primary-color), #ff6b6b);
+            color: white;
+            border: none;
+            padding: 11px 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 51, 102, 0.55);
+        }
+
+        @keyframes bouncePulse {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.04); }
+        }
+
+        /* استجابة الشاشات الصغيرة */
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .download-section { flex-direction: column; }
+            .data-field { flex-direction: column; gap: 15px; text-align: center; }
+            .field-info { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- النافذة المنبثقة الترحيبية بكأس العالم 2026 -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-modal" id="welcomeModal">
+            <button class="close-popup-btn" onclick="closeWelcomeModal()"><i class="fas fa-times"></i></button>
+            
+            <i class="fas fa-trophy trophy-icon"></i>
+            <h2 class="welcome-title">مرحباً بكم في كأس العالم 2026</h2>
+            <p class="welcome-subtitle">تابع جميع المباريات والقنوات الحصرية بأعلى جودة وبدون تقطيع على سيرفراتنا.</p>
+            <button class="btn-enter" onclick="closeWelcomeModal()">دخول للمشغل <i class="fas fa-arrow-left" style="margin-right: 6px;"></i></button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- الهيدر -->
+        <header>
+            <h1>Lumina IPTV</h1>
+            <p>حمل المشغل واحصل على بيانات السيرفر الحصرية لمتابعة البث المباشر فوراً</p>
+        </header>
+
+        <!-- قسم تحميل التطبيقات -->
+        <section class="download-section">
+            <a href="https://play.google.com/store" target="_blank" class="btn-download android">
+                <i class="fab fa-android"></i>
+                <div>
+                    <span style="font-size: 0.7rem; display: block; color: var(--text-muted);">تحميل للأندرويد</span>
+                    <span>Android APK</span>
+                </div>
+            </a>
+            <a href="https://apps.apple.com" target="_blank" class="btn-download apple">
+                <i class="fab fa-apple"></i>
+                <div>
+                    <span style="font-size: 0.7rem; display: block; color: var(--text-muted);">تحميل للأيفون</span>
+                    <span>iOS App Store</span>
+                </div>
+            </a>
+        </section>
+
+        <!-- قسم بيانات Xtream Codes الحصرية -->
+        <section class="exclusive-panel">
+            <div class="badge-exclusive">حصري وخاص</div>
+            <h2><i class="fas fa-key"></i> بيانات تسجيل الدخول (Xtream API)</h2>
+            
+            <!-- حقل الرابط -->
+            <div class="data-field">
+                <div class="field-info">
+                    <span class="field-label">رابط السيرفر (Host / URL)</span>
+                    <span class="field-value" id="host-val">http://marveliptv.life:80</span>
+                </div>
+                <button class="btn-copy" onclick="copyText('host-val', this)">
+                    <i class="far fa-copy"></i> نسخ
+                </button>
+            </div>
+
+            <!-- حقل اسم المستخدم -->
+            <div class="data-field">
+                <div class="field-info">
+                    <span class="field-label">اسم المستخدم (Username)</span>
+                    <span class="field-value" id="user-val">RLVKClECTD</span>
+                </div>
+                <button class="btn-copy" onclick="copyText('user-val', this)">
+                    <i class="far fa-copy"></i> نسخ
+                </button>
+            </div>
+
+            <!-- حقل كلمة المرور -->
+            <div class="data-field">
+                <div class="field-info">
+                    <span class="field-label">كلمة المرور (Password)</span>
+                    <span class="field-value" id="pass-val">PGr4peyP5U</span>
+                </div>
+                <button class="btn-copy" onclick="copyText('pass-val', this)">
+                    <i class="far fa-copy"></i> نسخ
+                </button>
+            </div>
+        </section>
+
+        <!-- أزرار التواصل الاجتماعي المحدثة بروابطك الخاصة -->
+        <section class="social-links">
+            <a href="https://t.me/+9647734202707?text=%D8%A7%D9%84%D8%AF%D8%B9%D9%85%20%D8%A7%D9%84%D9%81%D9%86%D9%8A" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://iwtsp.com/9647734202707" target="_blank" class="social-icon whatsapp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/zk9__7?igsh=cGxvbnpmYzdtM2p5&utm_source=qr" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+        </section>
+    </div>
+
+    <!-- التذييل والحقوق -->
+    <footer>
+        <p>صمم بواسطة <span>محمود الجنابي</span> &copy; 2026 جميع الحقوق محفوظة</p>
+    </footer>
+
+    <script>
+        // كود تشغيل إجباري ومباشر بمجرد تحميل الصفحة أول ثانية
+        window.onload = function() {
+            const overlay = document.getElementById('welcomeOverlay');
+            const modal = document.getElementById('welcomeModal');
+            
+            overlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                modal.style.transform = 'scale(1)';
+            }, 50);
+        };
+
+        // دالة إغلاق النافذة
+        function closeWelcomeModal() {
+            const overlay = document.getElementById('welcomeOverlay');
+            const modal = document.getElementById('welcomeModal');
+            
+            overlay.style.opacity = '0';
+            modal.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // دالة نسخ النصوص
+        function copyText(elementId, button) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+                button.style.background = '#00f2fe';
+                button.style.color = '#000';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = '#2d3748';
+                    button.style.color = 'var(--secondary-color)';
+                }, 2000);
+            }).catch(err => {
+                console.error('فشل في نسخ النص: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
